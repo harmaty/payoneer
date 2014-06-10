@@ -42,6 +42,13 @@ class Payoneer
     api_result(result)
   end
 
+  def balance
+    result = get_api_call balance_args
+    api_result(result)
+    response_hash = Hash.from_xml result
+    response_hash["GetAccountDetails"]["AccountBalance"].to_f
+  end
+
   private
 
   def api_result(body)
@@ -119,6 +126,15 @@ class Payoneer
       "p2" => @password,
       "p3" => @partner_id,
       "p4" => payee_id
+    }
+  end
+
+  def balance_args
+    {
+        "mname" => "GetAccountDetails",
+        "p1" => @username,
+        "p2" => @password,
+        "p3" => @partner_id,
     }
   end
 
