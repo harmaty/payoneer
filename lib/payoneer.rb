@@ -28,22 +28,22 @@ class Payoneer
 
   def payee_link(member_name)
     @member_name = member_name
-    result = get_api_call(payee_link_args)
+    result = api_call(payee_link_args)
     api_result(result)
   end
 
   def transfer_funds(options)
-    result = get_api_call(transfer_funds_args(options))
+    result = api_call(transfer_funds_args(options))
     api_result(result)
   end
 
   def payee_exists?(payee_id)
-    result = get_api_call(payee_exists_args(payee_id))
+    result = api_call(payee_exists_args(payee_id))
     api_result(result)
   end
 
   def balance
-    result = get_api_call balance_args
+    result = api_call balance_args
     api_result(result)
     response_hash = Hash.from_xml result
     response_hash["GetAccountDetails"]["AccountBalance"].to_f
@@ -83,14 +83,14 @@ class Payoneer
     end
   end
 
-  def get_api_call(args_hash)
+  def api_call(args_hash)
     uri = URI.parse(api_url)
-    uri.query = URI.encode_www_form(args_hash)
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
     request = Net::HTTP::Post.new(uri.request_uri)
+    request.set_form_data(args_hash)
     http.request(request).body
   end
 
